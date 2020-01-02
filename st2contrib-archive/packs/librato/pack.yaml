@@ -1,0 +1,7 @@
+---
+ref: librato
+name: librato
+description: Send and manage metrics with Librato
+version: 0.2.0
+author: James Fryman
+email: james@fryman.io

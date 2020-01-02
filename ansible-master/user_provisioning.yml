@@ -1,0 +1,42 @@
+---
+- name: "Onboarding user"
+  hosts: all
+  remote_user: chathura
+  become: true
+  become_method: sudo
+  vars:
+    new_user: "kasun"    # Put new user name here
+    password: "p@ssw0rd" # Put new user password here
+    Public_key_location: "/tmp/user.pub" # This will be used by tasks: "Copying public key"
+
+  tasks:
+    - name: Generate passowrd
+      command: /usr/bin/mkpasswd --method=sha-256 "{{ password }}"
+      register: hash_output
+      tags:
+        - provision_user
+
+    - name: "Create the user {{ new_user }}"
+      user:
+        name: "{{ new_user }}"
+        password: "{{ hash_output.stdout }}"
+        groups: sudo   # comment if user do not need sudo; add another groups if so
+        state: present
+        shell: /bin/bash       # Defaults to /bin/bash; can use to create nologin users
+        system: no             # Defaults to no
+      tags:
+        - provision_user
+#       createhome: yes        # Defaults to yes
+#       home: /home/{{new_user }}  # Defaults to /home/<username>
+
+    - name: Setting password change on first login
+      command: /usr/bin/chage -d 0 "{{ new_user }}" 
+      tags:
+        - provision_user
+
+    - name: Copying public key to the VM
+      authorized_key: 
+         user: "{{ new_user }}"
+         key: "{{lookup('file', '{{ Public_key_location }}')}}"
+      tags:
+        - copying_public_key   

@@ -1,0 +1,10 @@
+---
+ref: git
+name : git
+description : st2 content pack containing git integrations
+keywords:
+  - git
+  - scm
+version : 0.3.0
+author : StackStorm, Inc.
+email : info@stackstorm.com

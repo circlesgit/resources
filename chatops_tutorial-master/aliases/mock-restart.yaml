@@ -1,0 +1,18 @@
+---
+name: "mock-restart"
+description: "Restart a server"
+action_ref: "core.local"
+formats:
+  - display: "restart {{ hostname }}"
+    representation:
+      - "restart.*({{ cmd='sleep 3' }}){0}"
+ack:
+  append_url: false
+  format: "Restarting your server, wait a moment."
+result:
+  format: |
+    Restart succeeded, the server is back online: {~}
+    Staging (10.0.2.15): online.
+  extra:
+    slack:
+      color: "good"

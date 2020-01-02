@@ -1,0 +1,11 @@
+---
+ref: github
+name : github
+description : st2 content pack containing github integrations
+keywords:
+  - github
+  - git
+  - scm
+version : 0.6.0
+author : StackStorm, Inc.
+email : info@stackstorm.com

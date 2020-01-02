@@ -1,0 +1,9 @@
+webapp/node_modules/
+webapp/dist/
+*.swp
+.env
+ecs-deploy
+*.crt
+*.key
+.git
+vendor/

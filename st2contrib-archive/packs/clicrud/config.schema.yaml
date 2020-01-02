@@ -1,0 +1,27 @@
+---
+  username:
+    description: "Username used to authenticate."
+    type: "string"
+    secret: false
+    required: true
+    default: "admin"
+  password:
+    description: "Password used to authenticate."
+    type: "string"
+    secret: true
+    required: true
+  enable:
+    description: "Enable password."
+    type: "string"
+    secret: true
+    required: true
+    default: "password"
+  method:
+    description: "Connection method."
+    type: "string"
+    secret: false
+    default: "ssh"
+    enum:
+      - "ssh"
+      - "telnet"
+    required: true

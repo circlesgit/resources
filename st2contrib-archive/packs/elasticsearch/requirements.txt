@@ -1,0 +1,2 @@
+elasticsearch-curator==3.4.0
+easydict

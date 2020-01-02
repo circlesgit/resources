@@ -1,0 +1,5 @@
+#### Template3 : Full access on existing jobs of the project
+#user level
+user-USERNAME:context-project:project-PROJECTNAME:resource-job,regex,name="(.*)":'*'
+#group level
+groups-GROUPNAME:context-project:project-PROJECTNAME:resource-job,regex,name="(.*)":'*'

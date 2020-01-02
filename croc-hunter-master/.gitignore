@@ -1,0 +1,5 @@
+**/.DS_Store
+vendor/
+*.tgz
+levo-charts
+croc-hunter

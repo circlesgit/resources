@@ -1,0 +1,14 @@
+---
+name: check_aggregates
+runner_type: run-python
+description: Get Sensu check aggregates
+enabled: true
+entry_point: aggregate_check.py
+parameters:
+  check:
+    type: string
+    description: The client name
+    required: true
+  age:
+    type: string
+    description: Maximum age of results to return

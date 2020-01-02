@@ -1,0 +1,45 @@
+---
+- name: make one instance
+  local_action:
+    module: ec2
+    image: "{{ aws_image_id }}"
+    instance_type: "{{ aws_instance_type }}"
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    keypair: "{{ aws_keypair }}"
+    count: "{{ aws_vm_quantity }}"
+    instance_tags: "{{ aws_instance_tag }}"
+    region: "{{ aws_region }}"
+    group: "{{ aws_security_group }}"
+    vpc_subnet_id: "{{ aws_vpc_public_subnet_id }}"
+    private_ip: "{{ aws_vpc_public_subnet_Private_IP }}"
+    assign_public_ip: true
+    wait: true
+  register: ec2_info
+
+- name: Add new instance to host group
+  add_host:
+    hostname: "{{ item.public_ip }}"
+    groupname: "{{ aws_vm_name }}"
+  with_items: "{{ ec2_info.instances }}"
+#---------------------------------------------------
+- name: Attaching private ip address
+  local_action:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    module: ec2_eni
+    instance_id: "{{ item.id }}"
+    device_index: 1
+    private_ip_address: "{{ aws_vpc_private_subnet_Private_IP }}"
+    subnet_id: "{{ aws_vpc_private_subnet_id }}"
+    state: present
+    region: "{{ aws_region }}"
+    attached: yes
+  with_items: "{{ ec2_info.instances }}"
+#---------------------------------------------------
+- name: wait for instances to listen on port 22
+  wait_for:
+    state: started
+    host: "{{ item.public_dns_name }}"
+    port: 22
+  with_items: "{{ ec2_info.instances }}"

@@ -1,0 +1,9 @@
+env.APP_NAME = "sample_app" // APPLICATION NAME
+env.GIT_CREDENTIALS = "xXxXxXxX-xXxX-xXxX-xXxX-xXxXxXxXxXxX"
+env.APP_GIT_URL = "giturl_come_here"
+env.BUILD = "true"
+env.JENKINSAGENT_NAME = "jenkins_slave_name"
+env.CLOUD = "aws"
+env.AWS_ACCOUNT_ID = "123123123123"
+env.AWS_REGION = "us-east-1"
+env.CREDENTIALSID = "my_jenkins_credential_name_of_my_gcp_service_account_name"

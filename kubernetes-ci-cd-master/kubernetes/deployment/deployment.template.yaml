@@ -1,0 +1,44 @@
+---
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: webapp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      terminationGracePeriodSeconds: 60
+      containers:
+      - image: quay.io/wercker/kubernetes-ci-cd:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
+        name: webapp
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+          name: http
+
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "4Gi"
+            cpu: "4"
+
+        livenessProbe:
+          httpGet:
+            path: /cities.json
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /cities.json
+            port: 5000
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 5

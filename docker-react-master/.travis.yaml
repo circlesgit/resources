@@ -1,0 +1,23 @@
+sudo: required
+services:
+  - docker
+
+before_install:
+   - docker build -t chatura1989/docker-react -f "Dockerfile.dev" .
+
+script:
+   - docker run  chatura1989/docker-react npm run test -- --coverage
+
+deploy:
+  provider: elasticbeanstalk
+  region: <aws region of Elasticbeanstalk>
+  app: docker (app name you given)
+  env: "Docker-env" (after app name, you can find it)
+  bucket_name: <s3-bucket for your code, Travis upload your code as a zip file to this bucket>
+  bucket_path: "docker" <s3-bucket has folder as app name>
+  on:
+   branch: master
+  access_key_id: "$AWS_ACCESS_KEY"
+  secret_access_key:
+     secure: "$AWS_SECRET_KEY"
+  

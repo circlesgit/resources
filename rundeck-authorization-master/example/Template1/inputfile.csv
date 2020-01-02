@@ -1,0 +1,5 @@
+#### Template1 : readonly access at project level
+#user level
+user-USERNAME:context-application::resource-project,name=PROJECTNAME:read
+#group level
+groups-GROUPNAME:context-application::resource-project,name=PROJECTNAME:read

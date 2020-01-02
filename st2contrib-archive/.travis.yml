@@ -1,0 +1,36 @@
+language: python
+python: 2.7
+sudo: false
+os:
+  - linux
+env:
+  global:
+    - "PIP_DOWNLOAD_CACHE=$HOME/.pip-cache"
+  matrix:
+    - "TASK=flake8"
+    - "TASK=pylint"
+    - "TASK=configs-check"
+    - "TASK=metadata-check"
+    - "TASK=packs-resource-register"
+    - "TASK=packs-tests"
+services:
+  # Note: MongoDB and RabbitMQ is needed for packs-resource-register check
+  - mongodb
+  - rabbitmq
+addons:
+  apt:
+    packages:
+      - git  # needed by git-changes scripts
+      - libsox-dev  # needed by witai pack
+      - freetds-dev  # needed by mssql package
+cache:
+  apt: true
+  directories:
+    - $HOME/.pip-cache/
+install:
+  - pip install --upgrade pip
+script:
+  - ./scripts/travis.sh
+notifications:
+  email:
+    - eng@stackstorm.com

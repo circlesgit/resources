@@ -1,0 +1,5 @@
+#### Template4 : New job creation access at project level
+#user level
+user-USERNAME:context-project:project-PROJECTNAME:generic-job:'*'
+#group level
+groups-GROUPNAME:context-project:project-PROJECTNAME:generic-job:'*'

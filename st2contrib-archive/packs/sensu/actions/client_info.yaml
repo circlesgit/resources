@@ -1,0 +1,11 @@
+---
+name: client_info
+runner_type: run-python
+description: Get Sensu client info
+enabled: true
+entry_point: client_info.py
+parameters:
+  client:
+    type: string
+    description: The client name
+    required: true

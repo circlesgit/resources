@@ -1,0 +1,12 @@
+# create or append this to a .aclpolicy file
+---
+for:
+  job:
+  - allow: '*'
+    match:
+      name: (.*)
+description: generated
+context:
+  project: PROJECTNAME
+by:
+  username: USERNAME

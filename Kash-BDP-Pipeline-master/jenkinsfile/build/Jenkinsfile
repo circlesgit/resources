@@ -1,0 +1,108 @@
+pipeline {
+  agent {
+    label env.JENKINSAGENT_NAME
+  }
+  parameters {
+    booleanParam(
+      name: 'VERBOSE',
+      defaultValue: false,
+      description: 'Execute the scripts in verbose mode'
+      )
+    }
+  stages {
+    stage('Load Configfile') {
+      steps {
+        load "${WORKSPACE}/jenkinsfile/common-config/commons_config_for_build.groovy"
+        load "${WORKSPACE}/${env.CONFIGFILE}"
+      }
+    }
+    stage('git checkout of Application over ssh') {
+      when {
+        expression {
+          isNotApplicable = (env.APP_GIT_URL != "NOT-APPLICABLE")
+          def isSSH = (env.APP_GIT_URL =~ /^ssh.*/ )
+          return (isNotApplicable && isSSH)
+        }
+      }
+      steps {
+        script {
+          withCredentials([sshUserPrivateKey(credentialsId: env.GIT_CREDENTIALS, keyFileVariable: 'SSH_PRIVATE_KEY', passphraseVariable: '', usernameVariable: '')]) {
+            sh("""
+               git config core.sshCommand "ssh -o StrictHostKeyChecking=no -i ${SSH_PRIVATE_KEY}"
+               git ls-remote -h ${APP_GIT_URL} | cut -d/ -f3- > ${WORKSPACE}/app_branch_list
+              """)
+          }
+          env.APP_BRANCH_LIST = readFile (file: "${WORKSPACE}/app_branch_list")
+          timeout(5) {
+          env.APPLICATION_BRANCH = input message: 'Select the Git Branch of the Application', ok: 'Select Branch',
+          parameters: [choice(name: 'APPLICATION_BRANCH', choices: env.APP_BRANCH_LIST, description: 'What is the Git Branch of Application to Checkout?')]
+        }
+      }
+      dir(path: env.APPLICATION_GIT_REPO) {
+        checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: env.APPLICATION_BRANCH]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'WipeWorkspace']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: env.GIT_CREDENTIALS, url: env.APP_GIT_URL]]]
+      }
+    }
+  }
+  stage('git checkout of Application over http(s)') {
+    when {
+      expression {
+        isNotApplicable = (env.APP_GIT_URL != "NOT-APPLICABLE")
+        def isHTTP = (env.APP_GIT_URL =~ /^http.*/ )
+        return (isNotApplicable && isHTTP)
+      }
+    }
+    steps {
+      script {
+        withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: env.GIT_CREDENTIALS , usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD']]) {
+          sh("""
+          git config credential.username ${GIT_USERNAME}
+          git config credential.helper '!f() { echo password=${GIT_PASSWORD}; }; f'
+          git ls-remote -h ${APP_GIT_URL} | cut -d/ -f3- > ${WORKSPACE}/app_branch_list
+          """)
+        }
+        env.APP_BRANCH_LIST = readFile (file: "${WORKSPACE}/app_branch_list")
+        timeout(5) {
+          env.APPLICATION_BRANCH = input message: 'Select the Git Branch of the Application', ok: 'Select Branch',
+          parameters: [choice(name: 'APPLICATION_BRANCH', choices: env.APP_BRANCH_LIST, description: 'What is the Git Branch of Application to Checkout?')]
+        }
+      }
+      dir(path: env.APPLICATION_GIT_REPO) {
+        checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: env.APPLICATION_BRANCH]], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'WipeWorkspace']], submoduleCfg: [], userRemoteConfigs: [[credentialsId: env.GIT_CREDENTIALS, url: env.APP_GIT_URL]]]
+      }
+    }
+  }
+  stage('Application Build') {
+    when {
+      expression {
+        def canBuild = (env.BUILD =~ /^[Tt][Rr][Uu][Ee]$/ )
+        return (canBuild)
+      }
+    }
+    steps {
+      script {
+        sh("""
+        cd ${WORKSPACE}/${APPLICATION_GIT_REPO}/ && ./build_app.sh
+        """)
+      }
+    }
+  }
+  stage('Dockerize') {
+    steps {
+      script {
+        withCredentials([file(credentialsId: env.CREDENTIALSID, variable: 'SA_FILE')]) {
+          sh("""
+          CLOUD=\$(echo ${CLOUD}| tr '[:upper:]' '[:lower:]')
+          cd ${WORKSPACE}/scripts/${CLOUD}/ && ./dockerize.sh
+          """)
+        }
+      }
+    }
+  }
+  stage('Clean Workspace') {
+    steps {
+      echo "workspace cleanup"
+      cleanWs()
+    }
+  }
+  }
+}

@@ -1,0 +1,15 @@
+Maintainers: Evgeny Mandrikov <mandrikov@gmail.com> (@Godin)
+GitRepo: https://github.com/SonarSource/docker-sonarqube.git
+GitCommit: 485e83c6354c984cf86dd2da08fb8de441df89f7
+
+Tags: 6.7.3, lts
+Directory: 6.7.3
+
+Tags: 6.7.3-alpine, lts-alpine
+Directory: 6.7.3-alpine
+
+Tags: 7.1, latest
+Directory: 7.1
+
+Tags: 7.1-alpine, alpine
+Directory: 7.1-alpine

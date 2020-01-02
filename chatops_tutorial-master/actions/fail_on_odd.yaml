@@ -1,0 +1,11 @@
+---
+description: Fail every odd minute (with post_message for reporting to chat)
+enabled: true
+entry_point: workflows/fail_on_odd.yaml
+name: fail_on_odd
+parameters:
+  channel:
+    required: true
+    type: string
+    description: "Chatroom to report to"
+runner_type: mistral-v2

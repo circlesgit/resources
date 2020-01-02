@@ -1,0 +1,11 @@
+---
+ref: elasticsearch
+name : elasticsearch
+description : st2 elasticsearch integration pack
+keywords:
+  - elasticsearch
+  - curator
+  - databases
+version : 0.4.0
+author : StackStorm, Inc.
+email : info@stackstorm.com

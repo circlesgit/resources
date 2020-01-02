@@ -1,0 +1,16 @@
+---
+name: health
+runner_type: run-python
+description: Sensu System Health
+enabled: true
+entry_point: health.py
+parameters:
+  consumers:
+    type: integer
+    description: The minimum number of transport consumers to be considered healthy.
+    default: 2
+  messages:
+    type: integer
+    description: The maximum number of transport queued messages to be considered
+      healthy.
+    default: 100

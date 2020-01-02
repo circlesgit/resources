@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "webapp-alb-ingress"
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80,"HTTPS": 443}]'
+    # modify below with your subnets
+    alb.ingress.kubernetes.io/subnets: 'subnet-c21954bb, subnet-1bb7d850, subnet-ce481794'
+    # security groups on ALB - make sure:
+    # 1. HTTP and HTTPS ingress is open
+    # 2. ALB has tne nodegroup sg as well so it can health check the nodes
+    alb.ingress.kubernetes.io/security-groups: sg-2f25645f,sg-54391324
+    #alb.ingress.kubernetes.io/certificate-arn: <ACM_CERT_ARN>
+  labels:
+    app: webapp-service
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /greeting
+        backend:
+          serviceName: "webapp-service"
+          servicePort: 80
+      - path: /
+        backend:
+          serviceName: "caddy-service"
+          servicePort: 80

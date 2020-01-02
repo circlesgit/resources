@@ -1,0 +1,12 @@
+---
+ref: slack
+name : slack
+description : st2 content pack containing slack integrations
+keywords:
+  - slack
+  - chat
+  - messaging
+  - instant messaging
+version : 0.3.0
+author : StackStorm, Inc.
+email : info@stackstorm.com

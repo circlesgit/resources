@@ -1,0 +1,28 @@
+---
+name: "mock-sensu"
+description: "Check Sensu status for your network."
+action_ref: "core.noop"
+formats:
+  - "check status"
+ack:
+  enabled: false
+result:
+  format: |
+    done, here's the full report for your network:{~}
+    API (10.0.2.12): online.
+    DB (10.0.2.13): online.
+    DB2 (10.0.2.14): online.
+    Staging (10.0.2.15): *offline*.
+  extra:
+    slack:
+      author_name: "Sensu @ 10.0.3.16"
+      author_link: "https://github.com/emedvedev"
+      author_icon: "https://raw.githubusercontent.com/StackStorm/st2contrib/master/packs/sensu/icon.png"
+      fields:
+        - title: Online
+          value: 3 servers
+          short: true
+        - title: Offline
+          value: 1 server
+          short: true
+      color: "warning"

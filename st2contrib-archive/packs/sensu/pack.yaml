@@ -1,0 +1,11 @@
+---
+ref: sensu
+name : sensu
+description : st2 content pack containing sensu integrations
+keywords:
+  - sensu
+  - monitoring
+  - alerting
+version : 0.3.0
+author : StackStorm, Inc.
+email : info@stackstorm.com

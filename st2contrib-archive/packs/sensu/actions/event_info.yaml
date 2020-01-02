@@ -1,0 +1,15 @@
+---
+name: event_info
+runner_type: run-python
+description: Get Sensu event info
+enabled: true
+entry_point: event_info.py
+parameters:
+  client:
+    type: string
+    description: The client name
+    required: true
+  check:
+    type: string
+    description: The check to get information on
+    required: true

@@ -1,0 +1,41 @@
+---
+  credentials:
+    ec2_prod_us_west_1:
+      api_key: "username"
+      api_secret: "password"
+      type: "compute"
+      provider: "ec2_us_east"
+      region: "us-west-1"
+    rax_dev_iad:
+      api_key: "username"
+      api_secret: "password"
+      type: "compute"
+      provider: "rackspace"
+      region: "iad"
+    do_dev:
+      api_key: "username"
+      api_secret: "password"
+      type: "compute"
+      provider: "digitalocean"
+    zerigo_dev:
+      api_key: "username"
+      api_secret: "password"
+      type: "dns"
+      provider: "zerigo"
+    exoscale_prod:
+      api_key: "username"
+      api_secret: "password"
+      type: "compute"
+      provider: "exoscale"
+    aws_ecs:
+      api_key: "username"
+      api_secret: "blah blah"
+      type: "container"
+      provider: "ecs"
+      region: "us-east-1"
+    kubernetes:
+      api_key: "username"
+      api_secret: "blah blah"
+      type: "container"
+      provider: "kubernetes"
+      host: "12.34.56.67"

@@ -1,0 +1,11 @@
+---
+name: client_history
+runner_type: run-python
+description: Get Sensu client history
+enabled: true
+entry_point: client_history.py
+parameters:
+  client:
+    type: string
+    description: The client name
+    required: true

@@ -1,0 +1,115 @@
+box: golang
+dev:
+  steps:
+    - internal/watch:
+        code: |
+          go build ./...
+          ./source
+        reload: true
+# Build definition
+build:
+  # The steps that will be executed on build
+  steps:
+
+    # golint step!
+    - wercker/golint
+
+    - script:
+        name: debug
+        code: |
+          ls -l
+
+    # Build the project
+    - script:
+        name: go build
+        code: |
+          go build ./...
+
+    # Test the project
+    - script:
+        name: go test
+        code: |
+          go test ./...
+
+    - script:
+        name: copy artifacts to output dir
+        code: |
+          # artifacts
+          ls -l
+          cp ${WERCKER_ROOT}/source "$WERCKER_OUTPUT_DIR"
+          cp -a ${WERCKER_ROOT}/kubernetes "$WERCKER_OUTPUT_DIR"
+
+docker-push:
+
+  box:
+    id: golang
+
+  steps:
+
+    - script:
+        name: copy binaries to /opt/app
+        code: |
+          mkdir -p /opt
+          cp ${WERCKER_ROOT}/source /opt/source
+
+    - script:
+        name: echo docker tag
+        code: |
+          echo "DOCKER IMAGE:TAG"
+          echo "quay.io/wercker/kubernetes-ci-cd:${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}"
+
+    # Pushing to a quay.io repository
+    # For other docker repository refer to this doc: http://devcenter.wercker.com/docs/containers/pushing-containers
+    - internal/docker-push:
+        repository: quay.io/wercker/kubernetes-ci-cd
+        registry: https://quay.io
+        username: $QUAY_USERNAME
+        password: $QUAY_PASSWORD
+        tag: ${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}
+        entrypoint: /opt/source
+        port: 5000/tcp
+
+deploy:
+
+  box:
+    id: golang
+
+  steps:
+
+    - script:
+        name: debug
+        code: |
+          echo $WERCKER_OUTPUT_DIR
+          ls -l $WERCKER_OUTPUT_DIR
+          echo $WERCKER_ROOT
+          ls -l $WERCKER_ROOT
+
+    - bash-template:
+        cwd: $WERCKER_ROOT/kubernetes/deployment
+
+    - script:
+        name: Remove template files
+        cwd: $WERCKER_ROOT/kubernetes/deployment
+        code: |
+          rm *.template.yaml
+
+    - script:
+        name: debug
+        cwd: $WERCKER_ROOT/kubernetes/deployment
+        code: |
+          ls -l
+
+    - script:
+        name: echo tags
+        code: |
+          cat $WERCKER_ROOT/kubernetes/deployment/deployment.yaml
+          echo "Docker image and tag:"
+          echo "${WERCKER_GIT_BRANCH}-${WERCKER_GIT_COMMIT}"
+
+    - kubectl:
+        cwd: $WERCKER_ROOT/kubernetes/deployment
+        server: ${KUBE_ENDPOINT}
+        username: ${KUBE_USERNAME}
+        password: ${KUBE_PASSWORD}
+        insecure-skip-tls-verify: true
+        command: --namespace ${KUBE_NAMESPACE} apply -f .

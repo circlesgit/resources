@@ -1,0 +1,23 @@
+---
+name: "mock-deploy"
+description: "Deploy to a server"
+action_ref: "chatops_tutorial.fail_on_odd_silent"
+formats:
+  - display: "deploy {{ version }} to {{ hostname }}"
+    representation:
+      - "deploy.*"
+result:
+  ack:
+    enabled: false
+  format: |
+    I'm done with deployment, here's how it went:{~}
+    {% if execution.result.succeeded %}
+    Deploy succeeded!
+    {% else %}
+    Deploy failed: can't connect to server.
+    {% endif %}
+  extra:
+    slack:
+      color: "{% if execution.result.succeeded %}good{% else %}danger{% endif %}"
+    security:
+      twofactor: true

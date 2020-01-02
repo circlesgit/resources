@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: webapp
+spec:
+  rules:
+  - host: "kubernetes-ci-cd-demo.wercker.com"
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: webapp
+          servicePort: 5000

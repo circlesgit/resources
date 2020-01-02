@@ -1,0 +1,132 @@
+pipeline {
+  agent {
+    label ${env.JENKINSAGENT_NAME}
+  }
+  parameters {
+    string(
+      defaultValue: "this is dummy parameters",
+      description: 'this is dummy parameters',
+      name: 'dummy_param'
+    ),
+    booleanParam(
+      name: 'VERBOSE',
+      defaultValue: false,
+      description: 'Execute the scripts in verbose mode'
+      )
+  }
+  stages {
+    stage('Load Configfile') {
+      steps {
+        load "${WORKSPACE}/${env.CONFIGFILE}"
+        load "${WORKSPACE}/jenkins/config/commons.groovy"
+      }
+    }
+    stage('git checkout of Application') {
+      when {
+        expression {
+          return APP_GIT_URL != "NOT-APPLICABLE";
+          }
+        }
+      steps {
+        script {
+          sh "git ls-remote -h ${APP_GIT_URL} | cut -d/ -f3- > ${WORKSPACE}/app_branch_list"
+          env.APP_BRANCH_LIST = readFile (file: "${WORKSPACE}/app_branch_list")
+          timeout(5) {
+          env.APPLICATION_BRANCH = input message: 'Select the Branch', ok: 'Select Branch',
+          parameters: [choice(name: 'APPLICATION_BRANCH', choices: env.APP_BRANCH_LIST, description: 'What is the Branch for Deployment?')]
+        }
+        }
+        dir(path: APP_DIR) {
+          git(url: APP_GIT_URL, branch: env.APPLICATION_BRANCH, credentialsId: GIT_CREDENTIALS)
+        }
+        }
+        }
+        stage('git checkout of pipeline repo') {
+          when {
+            expression {
+              return MANIFEST_GIT_URL != "NOT-APPLICABLE";
+              }
+            }
+          steps {
+            script {
+              sh 'git config credential.helper "/bin/bash ' + env.WORKSPACE + '/scripts/git-credential-helper.sh"'
+              withCredentials([[
+              $class: 'UsernamePasswordMultiBinding',
+              credentialsId: 'pro-id',
+              usernameVariable: 'GIT_USERNAME',
+              passwordVariable: 'GIT_PASSWORD'
+              ]]) {
+              sh "git ls-remote -h ${MANIFEST_GIT_URL} | cut -d/ -f3- > ${WORKSPACE}/app_branch_list"
+            }
+              env.APP_BRANCH_LIST = readFile (file: "${WORKSPACE}/app_branch_list")
+              timeout(5) {
+              env.PIPELINE_BRANCH = input message: 'Select the Branch', ok: 'Select Branch',
+              parameters: [choice(name: 'PIPELINE_BRANCH', choices: env.APP_BRANCH_LIST, description: 'What is the Branch for Build?')]
+            }
+          }
+            dir(path: MANIFEST_GIT_DIR) {
+              git(url: MANIFEST_GIT_URL, branch: env.PIPELINE_BRANCH, credentialsId: 'pro-id')
+            }
+            }
+            }
+            stage('Application Build') {
+              when {
+                expression {
+                  return APP_GIT_URL != "NOT-APPLICABLE";
+                  }
+                }
+              steps {
+                script {
+                  if (env.COMMON_LIB_PARAM != '+') {
+                      env.COMMON_LIB_VERSION = "${COMMON_LIB_PARAM}"
+                      } else {
+                        env.COMMON_LIB_VERSION = "+"
+                      }
+                    sh("mkdir -p ${WORKSPACE}/${ARTIFACT_DIR}")
+                    sh("cp ${WORKSPACE}/${MANIFEST_GIT_DIR}/${APP_NAME}/build_app.sh ${WORKSPACE}/${APP_DIR}/")
+                    withCredentials([string(credentialsId: 'artifactory_user', variable: 'artifactory_user'), string(credentialsId: 'artifactory_password', variable: 'artifactory_password')]) {
+                    sh("cd ${WORKSPACE}/${APP_DIR}/ && ./build_app.sh")
+                  }
+                }
+              }
+            }
+            stage('Docker Build for ZED') {
+              when {
+                expression {
+                  return DATACENTER == "ZED";
+                  }
+                }
+              steps {
+                script {
+                  withCredentials([string(credentialsId: 'ZED-dev', variable: 'ZED_TOKEN')]) {
+                          sh("${WORKSPACE}/scripts/build_docker.sh")
+                  }
+                }
+              }
+            }
+            stage('Docker Build for GCP') {
+              when {
+                expression {
+                  return DATACENTER == "GCP";
+                  }
+                }
+              steps {
+                script {
+                  echo "Select Docker tag from GCP"
+                  withCredentials([file(credentialsId: PROJECTID, variable: 'gcloudKeyFile')]) {
+                  //withCredentials([file(credentialsId: PROJECTID, variable: 'AWS_SHARED_CREDENTIALS_FILE')]) {
+                        sh("gcloud auth activate-service-account --key-file=$gcloudKeyFile --project=${PROJECTID}")
+                        sh("gcloud config set account ${SERVICE_ACCOUNT}@${PROJECTID}.iam.gserviceaccount.com")
+                        sh("${WORKSPACE}/scripts/build_docker.sh")
+
+                  }
+                }
+              }
+            }
+                stage('Clean Workspace') {
+                  steps {
+                    cleanWs()
+                  }
+                }
+        }
+      }

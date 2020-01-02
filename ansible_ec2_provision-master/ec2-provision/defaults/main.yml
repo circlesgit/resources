@@ -1,0 +1,17 @@
+---
+aws_access_key: ""
+aws_secret_key: ""
+aws_acct_vpc_id: ""
+aws_security_group: ""
+aws_instance_type: ""
+aws_vm_quantity: "1"
+aws_region: ""
+aws_vpc_public_subnet_id: ""
+aws_vpc_public_subnet_Private_IP: ""
+aws_vpc_private_subnet_id: ""
+aws_vpc_private_subnet_Private_IP: ""
+aws_image_id: ""
+aws_keypair: ""
+aws_instance_tag: '{"Name":"{{ aws_vm_name }}_{{ server_env }}"}'
+aws_vm_name: ""
+server_env: ""

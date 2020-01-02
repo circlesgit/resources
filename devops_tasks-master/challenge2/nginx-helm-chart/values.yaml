@@ -1,0 +1,41 @@
+# Default values for nginx.
+# This is a YAML-formatted file.
+# Declare name/value pairs to be passed into your templates.
+
+replicaCount: 1
+restartPolicy: Never
+nameOverride: "Nginx"
+# Evaluated by the post-install hook
+sleepyTime: "10"
+
+image:
+  repository: nginx
+  tag: 1
+  pullPolicy: IfNotPresent
+
+service:
+  annotations: {}
+  clusterIP: ""
+  externalIPs: []
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  type: ClusterIP
+  port: 8888
+  nodePort: ""
+
+podAnnotations: {}
+
+resources: {}
+nginxrequestsmemory: "512Mi"
+nginxrequestscpu: "250m"
+nginxlimitsmemory: "512Mi"
+nginxlimitscpu: "500m"
+## sidecar configuration
+fluentdrequestsmemory: "200Mi"
+fluentdrequestscpu: "100m"
+fluentdlimitsmemory: "200Mi"
+fluentdlimitscpu: "100m"
+configmap_path: config/sidecar-fluentd/sidecar-configuration/
+sidecarimage:
+  repository: fluentd
+  imagetag: 0.1

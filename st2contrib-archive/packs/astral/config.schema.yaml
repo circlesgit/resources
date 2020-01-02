@@ -1,0 +1,17 @@
+---
+  latitude:
+    description: "Latitude of the location"
+    type: "number"
+    secret: false
+    required: true
+  longitude:
+    description: "Longitude of the location"
+    type: "number"
+    secret: false
+    required: true
+  timezone:
+    description: "Time zone to display in results"
+    type: "string"
+    secret: false
+    required: true
+    default: "GMT+0"

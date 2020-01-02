@@ -1,0 +1,15 @@
+---
+name: client_list
+runner_type: run-python
+description: List Sensu clients
+enabled: true
+entry_point: client_list.py
+parameters:
+  limit:
+    type: integer
+    description: The number of clients to return.
+    default: 
+  offset:
+    type: integer
+    description: The number of clients to offset before returning items.
+    default: 

@@ -1,0 +1,2 @@
+pynos==1.3.20
+pycparser==2.14

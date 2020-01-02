@@ -1,0 +1,82 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "nginx.fullname" . }}
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/name: {{ template "nginx.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      {{- if .Values.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ template "nginx.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: application_container
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              memory: {{default "200Mi" .Values.nginxrequestsmemory}}
+              cpu: {{default "100m" .Values.nginxrequestscpu}}
+            limits:
+              memory: {{default "200Mi" .Values.nginxlimitsmemory}}
+              cpu: {{default "100m" .Values.nginxlimitscpu}}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/log/nginx
+              name: log-storage
+        - name: sidecar_container
+          image: "{{ .Values.sidecarimage.repository }}:{{ .Values.sidecarimage.imagetag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            requests:
+              memory: {{default "200Mi" .Values.fluentdrequestsmemory}}
+              cpu: {{default "100m" .Values.fluentdrequestscpu}}
+            limits:
+              memory: {{default "200Mi" .Values.fluentdlimitsmemory}}
+              cpu: {{default "100m" .Values.fluentdlimitscpu}}
+          env:
+          - name: AWS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: aws_secrets
+                key: aws_key_id
+          - name: AWS_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: aws_secrets
+                key: aws_secret_key
+          - name: S3_BUCKET_NAME
+            valueFrom:
+              secretKeyRef:
+                name: aws_secrets
+                key: s3_bucket_name
+          - name: S3_REGION
+            valueFrom:
+              secretKeyRef:
+                name: aws_secrets
+                key: s3_region
+          volumeMounts:
+          - name: log-storage
+            mountPath: /mnt/log
+            readOnly: true
+          - name: sidecar-configuration
+            mountPath: /etc/fluentd/files
+      volumes:
+      - name: log-storage
+        emptyDir: {}
+      - name: sidecar-configuration
+        configMap:
+           name: sidecar-configuration

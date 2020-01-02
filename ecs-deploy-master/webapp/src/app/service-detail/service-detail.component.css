@@ -1,0 +1,51 @@
+.service-detail-container {
+  margin-top: 30px;
+}
+
+.cluster-info {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.center-table {
+  margin: 0 auto;
+}
+
+div.right-buttons {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+div.bottom-buttons {
+  margin-top: 30px;
+}
+
+.deploy-arrow {
+  padding: 30px;
+}
+
+.checkbox-label {
+  margin-bottom: 0px;
+  padding-top: 5px;
+}
+
+table.run-task {
+  margin-bottom: 30px;
+}
+div.logs {
+    max-height: 500px;
+    overflow-y: auto; 
+}
+
+span.middle {
+  padding-top: 4px;
+  display: inline-block;
+  vertical-align: middle;
+}
+td.button {
+  padding: 5px;
+  margin: 5px;
+}
+button.middle {
+  display: inline-block;
+  vertical-align: middle;
+}

@@ -1,0 +1,15 @@
+site_name: CI/CD Lab Guide
+pages:
+  - Home: "index.md"
+  - Lab 1 - Docker for CI/CD: "dockerintro.md"
+  - Lab 2 - Revision Control with Git: "git.md"
+  - Lab 3 - Setting up CI Pipeline with Jenkins: "jenkins.md"
+  - Lab 4 - Dev Workflow & Pipeline as a Code with Jenkinsfile : "jenkinsfile.md"
+  - Lab 5 - Using Docker to Simplify Jenkins Pipeline : "dockerjenkins.md"
+  - Lab 6 - Packaging Applications with Docker : "dockerfile.md"
+  - Lab 7 - Deploy to Dev with Compose : "devdeploycompose.md"
+  - Lab 8 - Adding Automated Testing : "tests.md"
+docs_dir: chapters
+theme: readthedocs
+plugins:
+    - search

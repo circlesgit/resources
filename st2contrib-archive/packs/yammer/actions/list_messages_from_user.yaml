@@ -1,0 +1,23 @@
+---
+name: list_messages_from_user
+runner_type: python-script
+description: List all messages from my feed for the authenticated user
+enabled: true
+entry_point: list_messages_from_user.py
+parameters:
+  user_id:
+    type: string
+    description: the user ID to show messages from
+    required: true
+  older_than_message:
+    type: integer
+    description: Only show messages older than this message ID
+    required: false
+  newer_than_message:
+    type: integer
+    description: Only show messages newer than this message ID
+    required: false
+  limit:
+    type: integer
+    description: Limit the number of messages
+    required: false

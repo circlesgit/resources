@@ -1,0 +1,5 @@
+#### Template5 : only read and execute access on existing jobs of the project
+#user level
+user-USERNAME:context-project:project-PROJECTNAME:resource-job,regex,name="(.*)":read,run
+#group level
+groups-GROUPNAME:context-project:project-PROJECTNAME:resource-job,regex,name="(.*)":read,run

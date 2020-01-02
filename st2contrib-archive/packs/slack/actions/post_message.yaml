@@ -1,0 +1,28 @@
+---
+  name: "post_message"
+  runner_type: "run-python"
+  description: "Post a message to the Slack channel."
+  enabled: true
+  entry_point: "post_message.py"
+  parameters:
+    message:
+      type: "string"
+      description: "Message to send."
+      required: true
+    username:
+      type: "string"
+      description: "Bot username."
+      required: false
+    channel:
+      type: "string"
+      description: "Optional channel to post to. Note channel must contain leading #"
+      required: false
+    icon_emoji:
+      type: "string"
+      description: "Bot icon"
+      required: false
+    disable_formatting:
+      type: "boolean"
+      description: "Disable formatting, don't parse the message and treat it as raw text"
+      required: false
+      default: false

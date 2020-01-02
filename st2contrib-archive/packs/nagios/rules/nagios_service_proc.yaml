@@ -1,0 +1,19 @@
+---
+name: check_proc
+pack: nagios
+description: Check process state on host
+enabled: true
+trigger:
+  type: nagios.service_state_change
+criteria:
+  service:
+    pattern: "(.*)_check_(.*)_process"
+    type: matchregex
+  state_type:
+    pattern: HARD
+    type: matchregex
+action:
+  ref: check_pgrep
+  parameters:
+    hosts: "{{trigger.host}}"
+    cmd: "{{trigger.service}} 1 10"

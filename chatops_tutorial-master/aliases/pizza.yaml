@@ -1,0 +1,10 @@
+---
+name: "pizza"
+description: "Order a pizza using the pre-defined payload (aka generic POST request)"
+action_ref: "chatops_tutorial.pizza"
+formats:
+  - "get me a pizza"
+ack:
+  enabled: false
+result:
+  format: "I've submitted your order. You'll get your pizza first thing!{~}"

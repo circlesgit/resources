@@ -1,0 +1,13 @@
+# This is a simple example of using a config map to create a single page static site.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sidecar-configuration
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app.kubernetes.io/name: {{ template "nginx.name" . }}
+data:
+  # When the config map is mounted as a volume, these will be created as files.
+  {{- (.Files.Glob  .Values.configmap_path).AsConfig | nindent 2 }}

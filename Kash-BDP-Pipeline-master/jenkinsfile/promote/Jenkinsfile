@@ -1,0 +1,68 @@
+pipeline {
+  agent {
+    label env.JENKINSAGENT_NAME
+  }
+  parameters {
+    booleanParam(
+      name: 'VERBOSE',
+      defaultValue: false,
+      description: 'Execute the scripts in verbose mode'
+      )
+    booleanParam(
+      name: 'STATIC',
+      defaultValue: false,
+      description: 'Make the docker images as STATIC as well when doing the image promotion'
+      )
+    }
+  stages {
+    stage('Load Configfile') {
+      steps {
+        load "${WORKSPACE}/${env.CONFIGFILE}"
+        load "${WORKSPACE}/jenkinsfile/common-config/commons_config_for_promote.groovy"
+      }
+    }
+    stage('Listing Docker tag') {
+      steps {
+        script {
+          withCredentials([file(credentialsId: env.SRC_CREDENTIALSID, variable: 'SA_FILE')]) {
+            sh("""
+            SRC_CLOUD=\$(echo ${SRC_CLOUD}| tr '[:upper:]' '[:lower:]')
+            ${WORKSPACE}/scripts/${SRC_CLOUD}/get_docker_tags.sh | cut -d/ -f3- > ${WORKSPACE}/docker_tag_list
+            """)
+            env.DOCKER_TAG_LIST = readFile (file: "${WORKSPACE}/docker_tag_list")
+            timeout(5) {
+              env.DOCKER_TAG = input message: 'Select the tag', ok: 'Select tag', parameters: [choice(name: 'DOCKER_TAG', choices: env.DOCKER_TAG_LIST, description: 'select the tag to promote?')]
+            }
+          }
+        }
+      }
+    }
+    stage('Docker Pull') {
+      steps {
+        script {
+          withCredentials([file(credentialsId: env.SRC_CREDENTIALSID, variable: 'SA_FILE')]) {
+            env.SRC_IMAGE= sh(script: "${WORKSPACE}/scripts/${SRC_CLOUD}/docker_image_pull.sh", returnStdout: true)
+          }
+        }
+      }
+    }
+    stage('Docker Push') {
+      steps {
+        script {
+          withCredentials([file(credentialsId: env.DST_CREDENTIALSID, variable: 'SA_FILE')]) {
+            sh("""
+            DST_CLOUD=\$(echo ${DST_CLOUD}| tr '[:upper:]' '[:lower:]')
+            ${WORKSPACE}/scripts/${DST_CLOUD}/docker_image_push.sh
+            """)
+          }
+        }
+      }
+    }
+    stage('Clean Workspace') {
+      steps {
+        echo "workspace cleanup"
+        cleanWs()
+      }
+    }
+  }
+}

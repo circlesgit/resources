@@ -1,0 +1,14 @@
+---
+ref: cubesensors
+name : cubesensors
+description : st2 content pack containing CubeSensors integrations
+keywords:
+  - cubesensors
+  - iot
+  - smart home
+  - sensors
+  - probes
+  - home automation
+version : 0.2.0
+author : StackStorm, Inc.
+email : info@stackstorm.com

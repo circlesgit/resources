@@ -1,0 +1,27 @@
+---
+name: "mock-sensu-single"
+description: "Check Sensu status for a single host."
+action_ref: "core.noop"
+formats:
+  - representation:
+      - "check status for.*"
+    display: "check status for {{ server }}"
+ack:
+  enabled: false
+result:
+  format: |
+    Your server appears to be online! Wonderful.{~}
+    Staging (10.0.2.15): online.
+  extra:
+    slack:
+      author_name: "Sensu @ 10.0.3.16"
+      author_link: "https://github.com/emedvedev"
+      author_icon: "https://raw.githubusercontent.com/StackStorm/st2contrib/master/packs/sensu/icon.png"
+      fields:
+      - title: Status
+        value: Online
+        short: true
+      - title: Uptime
+        value: 2m
+        short: true
+      color: "good"

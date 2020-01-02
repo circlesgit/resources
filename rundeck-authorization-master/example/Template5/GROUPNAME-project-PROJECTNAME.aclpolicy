@@ -1,0 +1,14 @@
+# create or append this to a .aclpolicy file
+---
+for:
+  job:
+  - allow:
+    - read
+    - run
+    match:
+      name: (.*)
+description: generated
+context:
+  project: PROJECTNAME
+by:
+  group: GROUPNAME

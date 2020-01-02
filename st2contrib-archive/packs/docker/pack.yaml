@@ -1,0 +1,12 @@
+---
+ref: docker
+name : docker
+description : st2 content pack containing docker integrations
+keywords :
+  - docker
+  - containers
+  - virtualization
+  - cgroups
+version : 0.1.0
+author : StackStorm, Inc.
+email : info@stackstorm.com
